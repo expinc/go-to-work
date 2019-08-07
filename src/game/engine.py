@@ -1,4 +1,4 @@
-from environment.environment import *
+from environment.Environment import *
 
 
 class Font:

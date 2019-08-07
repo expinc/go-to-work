@@ -1,45 +1,24 @@
-from enum import Enum
-from enum import unique
-from .engine import Engine
-from .gameEntity import *
+from .Engine import Engine
+from .ResourceContainer import *
+from .scene.Scene import Scene
+from .scene.SceneWelcome import SceneWelcome
 
 
-@unique
-class CockpitType(Enum):
-    Welcome = 0
-    Playing = 1
-
-
-class Game(GameEntity):
+class Game(ResourceContainer):
     def __init__(self):
         super().__init__()
-        self.cockpitType = CockpitType.Welcome
-        self.setResource("background", Engine.loadImage("welcome.png"))
-
-        self.pressStartColors = []
-        self.pressStartColors.append(Engine.createFont("calibri", 40, False, True, (255,0,0)))
-        self.pressStartColors.append(Engine.createFont("calibri", 40, False, True, (0,255,0)))
-        self.pressStartColors.append(Engine.createFont("calibri", 40, False, True, (0,0,255)))
-        self.pressStartColorIndex = 0
-        self.pressStartColorChangeInterval = 500
-
+        self.scene = SceneWelcome()
         self.fps = 20
-        self.lastTick = Engine.getTick()
+        self.lastFlushedTick = Engine.getTick()
 
 
-    def idle(self):
+    def handleEvent(self, event):
         currentTick = Engine.getTick()
-        tickTnterval = currentTick - self.lastTick
-        refreshTick = False
+        tickTnterval = currentTick - self.lastFlushedTick
 
-        Engine.draw(self.resources["background"], (0,0))
+        self.scene.handleEvent(event, currentTick)
 
-        pressStartText = Engine.createText("Press space to start", self.pressStartColors[self.pressStartColorIndex])
-        Engine.draw(pressStartText, (230,360))
-        if (tickTnterval > self.pressStartColorChangeInterval):
-            self.pressStartColorIndex = (self.pressStartColorIndex + 1) % 3
-            refreshTick = True
-
-        if True == refreshTick:
-            self.lastTick = currentTick
-        Engine.flushDisplay()
+        if (tickTnterval > (1 / self.fps * 1000)):
+            self.scene.draw()
+            self.lastFlushedTick = currentTick
+            Engine.flushDisplay()

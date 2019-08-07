@@ -1,4 +1,4 @@
-class GameEntity:
+class ResourceContainer:
     def __init__(self):
         self.resources = {}
 
