@@ -1,5 +1,6 @@
-from enum import *
-from .engine import *
+from enum import Enum
+from enum import unique
+from .engine import Engine
 from .gameEntity import *
 
 
